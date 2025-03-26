@@ -118,6 +118,163 @@ Target Domain支持额外目标的发现并允许附加到这些目标。本文�
 ```
 - **返回**：无
 
+### 4. 目标发现和控制
+
+#### Target.disposeBrowserContext
+- **描述**：销毁浏览器上下文
+- **参数**：
+```typescript
+{
+  browserContextId: Browser.BrowserContextID; // 要销毁的浏览器上下文ID
+}
+```
+- **返回**：无
+
+#### Target.getBrowserContexts
+- **描述**：获取所有浏览器上下文
+- **参数**：无
+- **返回**：
+```typescript
+{
+  browserContextIds: Browser.BrowserContextID[]; // 浏览器上下文ID列表
+}
+```
+
+#### Target.getTargets
+- **描述**：获取所有目标的信息
+- **参数**：无
+- **返回**：
+```typescript
+{
+  targetInfos: TargetInfo[]; // 目标信息列表
+}
+```
+
+#### Target.setDiscoverTargets
+- **描述**：控制是否应该发现可用的目标
+- **参数**：
+```typescript
+{
+  discover: boolean;         // 是否发现目标
+  filter?: TargetFilter;    // 目标过滤器
+}
+```
+- **返回**：无
+
+#### Target.sendMessageToTarget (已废弃)
+- **描述**：向目标发送消息
+- **参数**：
+```typescript
+{
+  message: string;          // 要发送的消息
+  sessionId?: SessionID;    // 会话ID
+  targetId?: TargetID;      // 目标ID
+}
+```
+- **返回**：无
+
+#### Target.attachToBrowserTarget (实验性)
+- **描述**：附加到浏览器目标
+- **参数**：无
+- **返回**：
+```typescript
+{
+  sessionId: SessionID;     // 分配给会话的ID
+}
+```
+
+#### Target.autoAttachRelated (实验性)
+- **描述**：自动附加到相关目标
+- **参数**：
+```typescript
+{
+  targetId: TargetID;       // 目标ID
+  waitForDebuggerOnStart: boolean; // 是否等待调试器
+}
+```
+- **返回**：无
+
+#### Target.exposeDevToolsProtocol (实验性)
+- **描述**：暴露DevTools协议
+- **参数**：
+```typescript
+{
+  targetId: TargetID;       // 目标ID
+  bindingName?: string;     // 绑定名称
+}
+```
+- **返回**：无
+
+#### Target.getTargetInfo (实验性)
+- **描述**：获取目标信息
+- **参数**：
+```typescript
+{
+  targetId: TargetID;       // 目标ID
+}
+```
+- **返回**：
+```typescript
+{
+  targetInfo: TargetInfo;   // 目标信息
+}
+```
+
+#### Target.setRemoteLocations (实验性)
+- **描述**：设置远程位置
+- **参数**：
+```typescript
+{
+  locations: RemoteLocation[]; // 远程位置列表
+}
+```
+- **返回**：无
+
+### Target.receivedMessageFromTarget
+- **描述**：从目标接收到消息时触发
+- **参数**：
+```typescript
+{
+  sessionId: SessionID;      // 会话ID
+  message: string;           // 消息内容
+  targetId?: TargetID;      // 目标ID
+}
+```
+
+### Target.targetInfoChanged
+- **描述**：当目标信息改变时触发
+- **参数**：
+```typescript
+{
+  targetInfo: TargetInfo;    // 目标信息
+}
+```
+
+### FilterEntry (实验性)
+- **描述**：目标查询/发现/自动附加操作使用的过滤器
+- **类型**：object
+- **属性**：
+```typescript
+{
+  exclude?: boolean;         // 如果设置，匹配的目标将从列表中排除
+  type?: string;            // 如果不存在，匹配任何类型
+}
+```
+
+### RemoteLocation (实验性)
+- **类型**：object
+- **属性**：
+```typescript
+{
+  host: string;             // 主机
+  port: number;             // 端口
+}
+```
+
+### TargetFilter (实验性)
+- **描述**：TargetFilter中的条目按顺序与目标匹配，第一个匹配的条目根据条目中的exclude字段值确定目标是否包含。如果未指定过滤器，则假定为[{type: "browser", exclude: true}, {type: "tab", exclude: true}, {}]（即包括除browser和tab之外的所有内容）
+- **类型**：array
+
 ## Events (事件)
 
 ### Target.attachedToTarget
@@ -215,14 +372,19 @@ type WindowState =
    - 目标监控（通过事件监听目标的生命周期）
 
 2. 部分功能标记为实验性(Experimental)，在使用时需要注意：
-   - 某些窗口管理功能
-   - 部分浏览器上下文功能
-   - 特定目标类型的附加信息
+   - Target.attachToBrowserTarget
+   - Target.autoAttachRelated
+   - Target.exposeDevToolsProtocol
+   - Target.getTargetInfo
+   - Target.setRemoteLocations
+   - FilterEntry、RemoteLocation、TargetFilter类型
+   
 
 3. 已废弃的功能：
+   - Target.sendMessageToTarget
    - Target.closeTarget的success返回值
    - Target.detachFromTarget中的targetId参数
 
 ## 参考链接
 
-- [Chrome DevTools Protocol - Target Domain](https://chromedevtools.github.io/devtools-protocol/tot/Target/) 
+- [Chrome DevTools Protocol Viewer - Target Domain](https://chromedevtools.github.io/devtools-protocol/tot/Target) 

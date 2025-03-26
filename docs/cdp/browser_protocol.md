@@ -245,16 +245,84 @@ type PermissionSetting =
   | 'prompt'      // 提示
 ```
 
+### BrowserCommandId (枚举)
+```typescript
+type BrowserCommandId =
+  | 'openTabSearch'
+  | 'closeTabSearch'
+  | 'toggleTabSearch'
+  | 'openTabFind'
+  | 'closeTabFind'
+  | 'toggleTabFind'
+  | 'selectNextTab'
+  | 'selectPreviousTab'
+  | 'closeTab'
+  | 'reloadTab'
+  | 'duplicateTab'
+```
+
+### WindowID (类型)
+```typescript
+type WindowID = number;
+```
+
+### Bounds (类型)
+```typescript
+interface Bounds {
+  left?: number;
+  top?: number;
+  width?: number;
+  height?: number;
+  windowState?: WindowState;
+}
+```
+
+### DownloadProgressEvent (类型)
+```typescript
+interface DownloadProgressEvent {
+  guid: string;           // 下载的唯一标识符
+  totalBytes: number;     // 总字节数
+  receivedBytes: number;  // 已接收字节数
+  state: "inProgress" | "completed" | "canceled" | "interrupted";
+}
+```
+
 ## 注意事项
 
 1. 所有标记为实验性(Experimental)的API都可能在未来版本中发生变化，使用时需要注意。
 2. 这些API提供了完整的浏览器控制能力，包括：
    - 基础浏览器操作（启动、关闭、版本信息）
    - 权限管理（设置、授予、重置权限）
-   - 窗口管理（获取和设置窗口位置、大小）
+   | 窗口管理（获取和设置窗口位置、大小）
    - 下载管理（控制下载行为、监控下载进度）
    - 诊断和调试功能（获取性能直方图等）
 
+### 实验性功能
+以下功能被标记为实验性(Experimental)，在未来版本中可能会发生变化：
+
+#### Methods
+- Browser.cancelDownload
+- Browser.crash
+- Browser.crashGpuProcess
+- Browser.executeBrowserCommand
+- Browser.getBrowserCommandLine
+- Browser.getHistogram
+- Browser.getHistograms
+- Browser.getWindowBounds
+- Browser.getWindowForTarget
+- Browser.grantPermissions
+- Browser.setDockTile
+- Browser.setDownloadBehavior
+- Browser.setPermission
+- Browser.setWindowBounds
+
+#### Events
+- Browser.downloadProgress
+- Browser.downloadWillBegin
+
+### 废弃功能
+目前Browser Domain中没有被标记为废弃(Deprecated)的功能。
+
 ## 参考链接
 
-- [Chrome DevTools Protocol - Browser Domain](https://chromedevtools.github.io/devtools-protocol/tot/Browser/) 
+- [Chrome DevTools Protocol Viewer - Browser Domain](https://chromedevtools.github.io/devtools-protocol/tot/Browser) 
