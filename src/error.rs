@@ -1,63 +1,69 @@
 use thiserror::Error;
 use tokio::sync::mpsc::error::SendError;
 
-/// 错误结果类型
-pub type Result<T> = std::result::Result<T, FdpError>;
-
-/// Firefox DevTools Protocol 客户端错误
+/// Debugger errors that can occur during browser automation
 #[derive(Error, Debug)]
-pub enum FdpError {
-    /// URL 解析错误
-    #[error("URL解析错误: {0}")]
-    InvalidUrl(String),
-    
-    /// 网络连接错误
-    #[error("网络错误: {0}")]
-    NetworkError(String),
-    
-    /// JSON 解析/序列化错误
-    #[error("协议错误: {0}")]
+pub enum DebuggerError {
+    #[error("Connection error: {0}")]
+    ConnectionError(String),
+
+    #[error("Protocol error: {0}")]
     ProtocolError(String),
-    
-    /// 无效的响应
-    #[error("无效的响应: {0}")]
-    InvalidResponse(String),
-    
-    /// 内部错误
-    #[error("内部错误: {0}")]
-    InternalError(String),
 
-    /// 未连接错误
-    #[error("未连接到浏览器")]
+    #[error("Network error: {0}")]
+    NetworkError(String),
+
+    #[error("Page error: {0}")]
+    PageError(String),
+
+    #[error("DOM error: {0}")]
+    DomError(String),
+
+    #[error("JavaScript error: {0}")]
+    JavaScriptError(String),
+
+    #[error("Serialization error: {0}")]
+    SerializationError(#[from] serde_json::Error),
+
+    #[error("WebSocket error: {0}")]
+    WebSocketError(String),
+
+    #[error("Timeout error: {0}")]
+    TimeoutError(String),
+
+    #[error("Not connected")]
     NotConnected,
+
+    #[error("Invalid argument: {0}")]
+    InvalidArgument(String),
+
+    #[error("Unknown error: {0}")]
+    Unknown(String),
 }
 
-impl From<std::io::Error> for FdpError {
+/// 错误结果类型
+pub type Result<T> = std::result::Result<T, DebuggerError>;
+
+impl From<std::io::Error> for DebuggerError {
     fn from(err: std::io::Error) -> Self {
-        FdpError::NetworkError(err.to_string())
+        DebuggerError::NetworkError(err.to_string())
     }
 }
 
-impl From<tokio_tungstenite::tungstenite::Error> for FdpError {
+impl From<tokio_tungstenite::tungstenite::Error> for DebuggerError {
     fn from(err: tokio_tungstenite::tungstenite::Error) -> Self {
-        FdpError::NetworkError(err.to_string())
+        DebuggerError::NetworkError(err.to_string())
     }
 }
 
-impl From<serde_json::Error> for FdpError {
-    fn from(err: serde_json::Error) -> Self {
-        FdpError::ProtocolError(err.to_string())
-    }
-}
-
-impl From<url::ParseError> for FdpError {
+impl From<url::ParseError> for DebuggerError {
     fn from(err: url::ParseError) -> Self {
-        FdpError::InvalidUrl(format!("URL解析错误: {}", err))
+        DebuggerError::InvalidArgument(format!("URL解析错误: {}", err))
     }
 }
 
-impl<T> From<SendError<T>> for FdpError {
+impl<T> From<SendError<T>> for DebuggerError {
     fn from(err: SendError<T>) -> Self {
-        FdpError::NetworkError(err.to_string())
+        DebuggerError::NetworkError(err.to_string())
     }
 } 
