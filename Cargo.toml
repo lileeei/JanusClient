@@ -34,3 +34,6 @@ path = "examples/chrome_example.rs"
 [[example]]
 name = "firefox_example"
 path = "examples/firefox_example.rs"
+
+[workspace]
+members = ["crates/*"]
